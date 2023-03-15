@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: './client'
+      dockerfile: Dockerfile
+    ports:
+      - ${FRONTEND_HOST_PORT}:${FRONTEND_CONTAINER_PORT}
+    container_name: ${APP_NAME}-frontend-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+  backend:
+    build:
+      context: './api'
+      dockerfile: Dockerfile
+    ports:
+      - ${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}
+    container_name: ${APP_NAME}-api-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - ${MONGO_HOST_PORT}:${MONGO_CONTAINER_PORT}
+    container_name: mongo-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - mongoData:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+networks:
+  mern-stack-network:
+volumes:
+  mongoData:
+
+
